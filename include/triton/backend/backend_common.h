@@ -278,6 +278,7 @@ struct CopyParams {
 constexpr int WILDCARD_DIM = -1;
 
 constexpr char kTensorRTExecutionAccelerator[] = "tensorrt";
+constexpr char kMIGraphXExecutionAccelerator[] = "migraphx";
 constexpr char kOpenVINOExecutionAccelerator[] = "openvino";
 constexpr char kGPUIOExecutionAccelerator[] = "gpu_io";
 constexpr char kAutoMixedPrecisionExecutionAccelerator[] =
