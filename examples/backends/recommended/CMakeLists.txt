@@ -40,9 +40,15 @@ project(tutorialrecommendedbackend LANGUAGES C CXX)
 option(TRITON_ENABLE_GPU "Enable GPU support in backend" OFF)
 option(TRITON_ENABLE_STATS "Include statistics collections in backend" ON)
 
+set(TRITON_REPO_ORGANIZATION "https://github.com/triton-inference-server" CACHE STRING "Git repository to pull from")
 set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/common repo")
 set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/core repo")
 set(TRITON_BACKEND_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/backend repo")
+
+#
+# Setting C++ min standard
+#
+set(TRITON_MIN_CXX_STANDARD 17 CACHE STRING "The minimum C++ standard whose features are requested to build this target.")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -58,19 +64,19 @@ include(FetchContent)
 
 FetchContent_Declare(
   repo-common
-  GIT_REPOSITORY https://github.com/triton-inference-server/common.git
+  GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/common.git
   GIT_TAG ${TRITON_COMMON_REPO_TAG}
   GIT_SHALLOW ON
 )
 FetchContent_Declare(
   repo-core
-  GIT_REPOSITORY https://github.com/triton-inference-server/core.git
+  GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/core.git
   GIT_TAG ${TRITON_CORE_REPO_TAG}
   GIT_SHALLOW ON
 )
 FetchContent_Declare(
   repo-backend
-  GIT_REPOSITORY https://github.com/triton-inference-server/backend.git
+  GIT_REPOSITORY ${TRITON_REPO_ORGANIZATION}/backend.git
   GIT_TAG ${TRITON_BACKEND_REPO_TAG}
   GIT_SHALLOW ON
 )
@@ -97,12 +103,12 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_features(triton-recommended-backend PRIVATE cxx_std_11)
+target_compile_features(triton-recommended-backend PRIVATE cxx_std_${TRITON_MIN_CXX_STANDARD})
 target_compile_options(
   triton-recommended-backend PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
     -Wall -Wextra -Wno-unused-parameter -Wno-type-limits -Werror>
-  $<$<CXX_COMPILER_ID:MSVC>:/Wall /D_WIN32_WINNT=0x0A00 /EHsc>
+  $<$<CXX_COMPILER_ID:MSVC>:/Wall /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor>
 )
 
 target_link_libraries(
