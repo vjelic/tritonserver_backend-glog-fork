@@ -40,6 +40,11 @@ option(TRITON_ENABLE_MEMORY_TRACKER "Include device memory tracker in backend ut
 set(TRITON_COMMON_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/common repo")
 set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/core repo")
 
+if(TRITON_ENABLE_ROCM OR TRITON_ENABLE_MIGRAPHX)
+  set(TRITON_ENABLE_GPU ON)
+endif()
+
+MESSAGE(FATAL_ERROR "setting is ${TRITON_ENABLE_GPU}")
 #
 # Setting C++ standard
 #
