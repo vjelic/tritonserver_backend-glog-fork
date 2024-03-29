@@ -84,13 +84,13 @@ BackendModelInstance::BackendModelInstance(
     }
     case TRITONSERVER_INSTANCEGROUPKIND_GPU: {
 #if defined(TRITON_ENABLE_GPU)
-      cudaDeviceProp cuprops;
-      cudaError_t cuerr = cudaGetDeviceProperties(&cuprops, device_id_);
-      if (cuerr != cudaSuccess) {
+      hipDeviceProp_t cuprops;
+      hipError_t cuerr = hipGetDeviceProperties(&cuprops, device_id_);
+      if (cuerr != hipSuccess) {
         throw BackendModelInstanceException(TRITONSERVER_ErrorNew(
             TRITONSERVER_ERROR_INTERNAL,
             (std::string("unable to get CUDA device properties for ") + name_ +
-             ": " + cudaGetErrorString(cuerr))
+             ": " + hipGetErrorString(cuerr))
                 .c_str()));
       }
 
@@ -156,12 +156,12 @@ BackendModelInstance::~BackendModelInstance()
 {
 #ifdef TRITON_ENABLE_GPU
   if (stream_ != nullptr) {
-    cudaError_t err = cudaStreamDestroy(stream_);
-    if (err != cudaSuccess) {
+    hipError_t err = hipStreamDestroy(stream_);
+    if (err != hipSuccess) {
       TRITONSERVER_LogMessage(
           TRITONSERVER_LOG_ERROR, __FILE__, __LINE__,
           (std::string("~BackendModelInstance: ") + name_ +
-           " failed to destroy cuda stream: " + cudaGetErrorString(err))
+           " failed to destroy cuda stream: " + hipGetErrorString(err))
               .c_str());
     }
     stream_ = nullptr;

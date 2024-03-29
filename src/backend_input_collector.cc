@@ -252,7 +252,7 @@ BackendInputCollector::ProcessTensor(
       buffer, buffer_byte_size, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_GPU
   if (need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
 }
@@ -362,9 +362,9 @@ BackendInputCollector::Finalize()
 #ifdef TRITON_ENABLE_GPU
   if ((!deferred_pinned_.empty()) && need_sync_) {
     if (event_ != nullptr) {
-      cudaEventSynchronize(event_);
+      hipEventSynchronize(event_);
     } else {
-      cudaStreamSynchronize(stream_);
+      hipStreamSynchronize(stream_);
     }
     need_sync_ = false;
   }
@@ -374,7 +374,7 @@ BackendInputCollector::Finalize()
   // deferred copies of pinned->CPU can now be done.
 #ifdef TRITON_ENABLE_GPU
   if (buffer_ready_event_ != nullptr) {
-    cudaEventSynchronize(buffer_ready_event_);
+    hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_GPU
@@ -390,7 +390,7 @@ BackendInputCollector::Finalize()
 #ifdef TRITON_ENABLE_GPU
   // Record the new event location if deferred copies occur
   if ((!deferred_pinned_.empty()) && need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
 
@@ -398,7 +398,7 @@ BackendInputCollector::Finalize()
 }
 
 bool
-BackendInputCollector::DeferredPinned::Finalize(cudaStream_t stream)
+BackendInputCollector::DeferredPinned::Finalize(hipStream_t stream)
 {
   bool cuda_used = false;
   auto err = CopyBuffer(
@@ -511,7 +511,7 @@ BackendInputCollector::SetInputTensor(
 
 #ifdef TRITON_ENABLE_GPU
   if (wait_buffer && (buffer_ready_event_ != nullptr)) {
-    cudaEventSynchronize(buffer_ready_event_);
+    hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_GPU
@@ -611,7 +611,7 @@ BackendInputCollector::FlushPendingPinned(
       if (!cuda_used) {
 #ifdef TRITON_ENABLE_GPU
         if (buffer_ready_event_ != nullptr) {
-          cudaEventSynchronize(buffer_ready_event_);
+          hipEventSynchronize(buffer_ready_event_);
           buffer_ready_event_ = nullptr;
         }
 #endif  // TRITON_ENABLE_GPU
@@ -694,7 +694,7 @@ BackendInputCollector::FlushPendingPinned(
                   if (incomplete_count->fetch_sub(1) == 1) {
 #ifdef TRITON_ENABLE_GPU
                     if (buffer_ready_event_ != nullptr) {
-                      cudaEventSynchronize(buffer_ready_event_);
+                      hipEventSynchronize(buffer_ready_event_);
                       buffer_ready_event_ = nullptr;
                     }
 #endif  // TRITON_ENABLE_GPU
@@ -827,7 +827,7 @@ BackendInputCollector::ProcessBatchInput(
 {
 #ifdef TRITON_ENABLE_GPU
   if (buffer_ready_event_ != nullptr) {
-    cudaEventSynchronize(buffer_ready_event_);
+    hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_GPU
@@ -1283,20 +1283,20 @@ BackendInputCollector::LaunchCopyKernel(
   }
   char* byte_size_offset_buffer = backend_memory->MemoryPtr();
 
-  cudaMemcpyAsync(
+  hipMemcpyAsync(
       input_ptr_buffer, input_ptr_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(int8_t*),
-      cudaMemcpyDefault, stream_);
-  cudaMemcpyAsync(
+      hipMemcpyDefault, stream_);
+  hipMemcpyAsync(
       byte_size_buffer, byte_size_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(size_t),
-      cudaMemcpyDefault, stream_);
-  cudaMemcpyAsync(
+      hipMemcpyDefault, stream_);
+  hipMemcpyAsync(
       byte_size_offset_buffer, byte_size_offset_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(size_t),
-      cudaMemcpyDefault, stream_);
+      hipMemcpyDefault, stream_);
   if (buffer_ready_event_ != nullptr) {
-    cudaEventSynchronize(buffer_ready_event_);
+    hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
   RETURN_IF_CUDA_ERROR(

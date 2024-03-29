@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 #include "triton/core/tritonserver.h"
-
+asdf
 namespace triton { namespace backend {
 
 std::unique_ptr<DeviceMemoryTracker> DeviceMemoryTracker::tracker_{nullptr};
@@ -80,7 +80,7 @@ bufferRequested(uint8_t** buffer, size_t* size, size_t* maxNumRecords)
 
 void
 bufferCompleted(
-    CUcontext ctx, uint32_t streamId, uint8_t* buffer, size_t size,
+    hipCtx_t ctx, uint32_t streamId, uint8_t* buffer, size_t size,
     size_t validSize)
 {
   CUptiResult status;
@@ -114,10 +114,10 @@ bufferCompleted(
 
 DeviceMemoryTracker::DeviceMemoryTracker()
 {
-  cudaError_t cuerr = cudaGetDeviceCount(&device_cnt_);
-  if ((cuerr == cudaErrorNoDevice) || (cuerr == cudaErrorInsufficientDriver)) {
+  hipError_t cuerr = hipGetDeviceCount(&device_cnt_);
+  if ((cuerr == hipErrorNoDevice) || (cuerr == hipErrorInsufficientDriver)) {
     device_cnt_ = 0;
-  } else if (cuerr != cudaSuccess) {
+  } else if (cuerr != hipSuccess) {
     throw std::runtime_error(
         "Unexpected failure on getting CUDA device count.");
   }

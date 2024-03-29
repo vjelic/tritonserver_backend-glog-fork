@@ -147,7 +147,7 @@ BackendOutputResponder::ProcessTensor(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_GPU
   if (need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
 }
@@ -242,7 +242,7 @@ BackendOutputResponder::ProcessStateTensor(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_GPU
   if (need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
 
@@ -255,9 +255,9 @@ BackendOutputResponder::Finalize()
 #ifdef TRITON_ENABLE_GPU
   if ((!deferred_pinned_.empty()) && need_sync_) {
     if (event_ != nullptr) {
-      cudaEventSynchronize(event_);
+      hipEventSynchronize(event_);
     } else {
-      cudaStreamSynchronize(stream_);
+      hipStreamSynchronize(stream_);
     }
     need_sync_ = false;
   }
@@ -293,7 +293,7 @@ BackendOutputResponder::Finalize()
 #ifdef TRITON_ENABLE_GPU
   // Record the new event location if deferred copies occur
   if ((!deferred_pinned_.empty()) && need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
   deferred_pinned_.clear();
@@ -599,7 +599,7 @@ BackendOutputResponder::ProcessBatchOutput(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_GPU
   if (need_sync_ && (event_ != nullptr)) {
-    cudaEventRecord(event_, stream_);
+    hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_GPU
 }
