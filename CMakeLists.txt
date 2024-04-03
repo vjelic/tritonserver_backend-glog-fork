@@ -42,7 +42,9 @@ set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/co
 
 # Brian
 if(TRITON_ENABLE_ROCM OR TRITON_ENABLE_MIGRAPHX)
-  set(TRITON_ENABLE_GPU ON)
+  include_directories(/opt/rocm-6.0.2/include)
+  # don't do this; it adds cuda to include directories which causes conflicts
+  # set(TRITON_ENABLE_GPU ON)
 endif()
 
 #
