@@ -42,7 +42,7 @@ set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/co
 
 # Brian
 if(TRITON_ENABLE_ROCM OR TRITON_ENABLE_MIGRAPHX)
-  set(TRITON_ENABLE_GPU ON)
+  include_directories(/opt/rocm/include)
 endif()
 
 #
