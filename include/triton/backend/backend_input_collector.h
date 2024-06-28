@@ -36,16 +36,16 @@
 #include "triton/common/sync_queue.h"
 #include "triton/core/tritonbackend.h"
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
 #include <hip/hip_runtime_api.h>
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
 namespace triton { namespace backend {
 
-#ifndef TRITON_ENABLE_GPU
+#ifndef TRITON_ENABLE_ROCM
 using hipStream_t = void*;
 using hipEvent_t = void*;
-#endif  // !TRITON_ENABLE_GPU
+#endif  // !TRITON_ENABLE_ROCM
 
 //
 // BackendInputCollector
@@ -69,9 +69,9 @@ class BackendInputCollector {
         pinned_enabled_(pinned_enabled),
         use_async_cpu_copy_(triton::common::AsyncWorkQueue::WorkerCount() > 1),
         stream_(stream),
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
         event_(event), buffer_ready_event_(buffer_ready_event),
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
         kernel_buffer_threshold_(kernel_buffer_threshold),
         pending_pinned_byte_size_(0), pending_pinned_offset_(0),
         pending_copy_kernel_buffer_byte_size_(0),
@@ -236,10 +236,10 @@ class BackendInputCollector {
   const bool pinned_enabled_;
   const bool use_async_cpu_copy_;
   hipStream_t stream_;
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   hipEvent_t event_;
   hipEvent_t buffer_ready_event_;
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
   const size_t kernel_buffer_threshold_;
 
   size_t pending_pinned_byte_size_;

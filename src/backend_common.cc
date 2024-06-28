@@ -58,7 +58,7 @@
 
 namespace triton { namespace backend {
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
 void CUDART_CB
 MemcpyHost(void* args)
 {
@@ -66,7 +66,7 @@ MemcpyHost(void* args)
   memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_);
   delete copy_params;
 }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
 TRITONSERVER_MemoryType
 GetUsePinnedMemoryType(TRITONSERVER_MemoryType ref_buffer_type)
@@ -692,7 +692,7 @@ CopyBuffer(
   // need to be careful on whether the src buffer is valid.
   if ((src_memory_type != TRITONSERVER_MEMORY_GPU) &&
       (dst_memory_type != TRITONSERVER_MEMORY_GPU)) {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
     if (copy_on_stream) {
       auto params = new CopyParams(dst, src, byte_size);
       hipLaunchHostFunc(
@@ -703,9 +703,9 @@ CopyBuffer(
     }
 #else
     memcpy(dst, src, byte_size);
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
   } else {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
     // [TODO] use hipMemcpyDefault if UVM is supported for the device
     auto copy_kind = hipMemcpyDeviceToDevice;
     if (src_memory_type != TRITONSERVER_MEMORY_GPU) {
@@ -733,7 +733,7 @@ CopyBuffer(
         TRITONSERVER_ERROR_INTERNAL,
         std::string(msg + ": try to use CUDA copy while GPU is not supported")
             .c_str());
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
   }
 
   return nullptr;  // success
@@ -900,7 +900,7 @@ CreateCudaStream(
 {
   *stream = nullptr;
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   // Make sure that correct device is set before creating stream and
   // then restore the device to what was set by the caller.
   int current_device;
@@ -929,7 +929,7 @@ CreateCudaStream(
         (std::string("unable to create stream: ") + hipGetErrorString(cuerr))
             .c_str());
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
   return nullptr;  // success
 }

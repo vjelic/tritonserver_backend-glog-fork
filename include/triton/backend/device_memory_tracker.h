@@ -37,7 +37,7 @@
 #include "triton/common/logging.h"
 #include "triton/core/tritonserver.h"
 
-#if defined(TRITON_ENABLE_GPU) && defined(TRITON_ENABLE_MEMORY_TRACKER)
+#if defined(TRITON_ENABLE_ROCM) && defined(TRITON_ENABLE_MEMORY_TRACKER)
 #include <cupti.h>
 #endif
 
@@ -246,7 +246,7 @@ class DeviceMemoryTracker {
   };
 
 
-#if defined(TRITON_ENABLE_GPU) && defined(TRITON_ENABLE_MEMORY_TRACKER)
+#if defined(TRITON_ENABLE_ROCM) && defined(TRITON_ENABLE_MEMORY_TRACKER)
   static bool Init();
   static void Fini();
 
@@ -325,7 +325,7 @@ class DeviceMemoryTracker {
   {
     return false;
   }
-#endif  // TRITON_ENABLE_GPU && TRITON_ENABLE_MEMORY_TRACKER
+#endif  // TRITON_ENABLE_ROCM && TRITON_ENABLE_MEMORY_TRACKER
 };
 
 }}  // namespace triton::backend

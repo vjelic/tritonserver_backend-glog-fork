@@ -29,15 +29,15 @@
 
 #include "triton/core/tritonbackend.h"
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
 #include <hip/hip_runtime_api.h>
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
 namespace triton { namespace backend {
 
-#ifndef TRITON_ENABLE_GPU
+#ifndef TRITON_ENABLE_ROCM
 using hipStream_t = void*;
-#endif  // !TRITON_ENABLE_GPU
+#endif  // !TRITON_ENABLE_ROCM
 
 class BackendModel;
 

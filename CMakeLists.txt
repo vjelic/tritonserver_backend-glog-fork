@@ -31,7 +31,7 @@ project(tritonbackend LANGUAGES C CXX)
 #
 # Options
 #
-option(TRITON_ENABLE_GPU "Enable GPU support in backend utilities" ON)
+option(TRITON_ENABLE_ROCM "Enable GPU support in backend utilities" ON)
 option(TRITON_ENABLE_MALI_GPU "Enable Arm MALI GPU support in backend utilities" OFF)
 option(TRITON_ENABLE_STATS "Include statistics collections in backend utilities" ON)
 # Default OFF unless backend explicitly request to use provided implementation
@@ -42,9 +42,9 @@ set(TRITON_CORE_REPO_TAG "main" CACHE STRING "Tag for triton-inference-server/co
 
 # Brian
 if(TRITON_ENABLE_ROCM OR TRITON_ENABLE_MIGRAPHX)
-  include_directories(/opt/rocm-6.0.2/include)
+  include_directories(/opt/rocm/include)
   # don't do this; it adds cuda to include directories which causes conflicts
-  # set(TRITON_ENABLE_GPU ON)
+  # set(TRITON_ENABLE_ROCM ON)
 endif()
 
 #
@@ -56,8 +56,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if(TRITON_ENABLE_MEMORY_TRACKER AND NOT TRITON_ENABLE_GPU)
-  message(WARNING "TRITON_ENABLE_MEMORY_TRACKER=ON requires TRITON_ENABLE_GPU=ON, TRITON_ENABLE_MEMORY_TRACKER will be disable")
+if(TRITON_ENABLE_MEMORY_TRACKER AND NOT TRITON_ENABLE_ROCM)
+  message(WARNING "TRITON_ENABLE_MEMORY_TRACKER=ON requires TRITON_ENABLE_ROCM=ON, TRITON_ENABLE_MEMORY_TRACKER will be disable")
   set(TRITON_ENABLE_MEMORY_TRACKER OFF CACHE BOOL "Device memory tracker disabled" FORCE)
 endif()
 
@@ -83,19 +83,10 @@ FetchContent_MakeAvailable(repo-common repo-core)
 #
 # CUDA
 #
-if(${TRITON_ENABLE_GPU})
-  set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
-  find_package(CUDAToolkit REQUIRED)
-  find_package(CUDA REQUIRED)
-  message(STATUS "Using CUDA ${CUDA_VERSION}")
-  set(CUDA_NVCC_FLAGS -std=c++${TRITON_MIN_CXX_STANDARD})
-
-  if(CUDA_VERSION VERSION_GREATER "10.1" OR CUDA_VERSION VERSION_EQUAL "10.1")
-    add_definitions(-DTRITON_ENABLE_CUDA_GRAPH=1)
-  else()
-    message(WARNING "CUDA ${CUDA_VERSION} does not support CUDA graphs.")
-  endif()
-endif() # TRITON_ENABLE_GPU
+if(${TRITON_ENABLE_ROCM})
+  list(APPEND CMAKE_PREFIX_PATH "/opt/rocm")
+  find_package(hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
+endif() # TRITON_ENABLE_ROCM
 
 #
 # Backend library containing useful source and utilities
@@ -109,19 +100,20 @@ set(SRC_FILES
   "src/backend_output_responder.cc"
 )
 
-if(${TRITON_ENABLE_GPU})
+if(${TRITON_ENABLE_ROCM})
   set(SRC_FILES ${SRC_FILES} "src/kernel.h")
+  set(SRC_FILES ${SRC_FILES} "src/kernel.cc")
   if(${TRITON_ENABLE_MEMORY_TRACKER})
     set(SRC_FILES ${SRC_FILES} "src/device_memory_tracker.cc")
   endif() # TRITON_ENABLE_MEMORY_TRACKER
-endif() # TRITON_ENABLE_GPU
+endif() # TRITON_ENABLE_ROCM
 
 add_library(
   triton-backend-utils
   ${SRC_FILES}
 )
 
-if(${TRITON_ENABLE_GPU})
+if(${TRITON_ENABLE_ROCM})
   set(HOST_COMPILER_FLAGS "")
   if (WIN32)
     set(HOST_COMPILER_FLAGS "/MD")
@@ -129,15 +121,15 @@ if(${TRITON_ENABLE_GPU})
     set(HOST_COMPILER_FLAGS "-fPIC")
   endif()
 
-  set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
-  cuda_add_library(
-    kernel_library_new
-    src/kernel.cu src/kernel.h
-    OPTIONS -arch compute_53
-    OPTIONS -code compute_53,sm_53,sm_60,sm_61,sm_62,sm_70,sm_72,sm_75
-    OPTIONS -Xcompiler ${HOST_COMPILER_FLAGS}
-  )
-endif() # TRITON_ENABLE_GPU
+  #set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
+  #cuda_add_library(
+  #  kernel_library_new
+  #  src/kernel.cu src/kernel.h
+  #  OPTIONS -arch compute_53
+  #  OPTIONS -code compute_53,sm_53,sm_60,sm_61,sm_62,sm_70,sm_72,sm_75
+  #  OPTIONS -Xcompiler ${HOST_COMPILER_FLAGS}
+  #)
+endif() # TRITON_ENABLE_ROCM
 
 add_library(
   TritonBackend::triton-backend-utils ALIAS triton-backend-utils
@@ -167,11 +159,11 @@ target_compile_options(
   $<$<CXX_COMPILER_ID:MSVC>:/Wall /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor>
 )
 
-# TRITON_ENABLE_GPU exposed in header so set PUBLIC
-if(${TRITON_ENABLE_GPU})
+# TRITON_ENABLE_ROCM exposed in header so set PUBLIC
+if(${TRITON_ENABLE_ROCM})
   target_compile_definitions(
     triton-backend-utils
-    PUBLIC TRITON_ENABLE_GPU=1
+    PUBLIC TRITON_ENABLE_ROCM=1
   )
   if(${TRITON_ENABLE_MEMORY_TRACKER})
     target_compile_definitions(
@@ -179,7 +171,7 @@ if(${TRITON_ENABLE_GPU})
       PUBLIC TRITON_ENABLE_MEMORY_TRACKER=1
     )
   endif() # TRITON_ENABLE_MEMORY_TRACKER
-endif() # TRITON_ENABLE_GPU
+endif() # TRITON_ENABLE_ROCM
 
 # TRITON_ENABLE_MALI_GPU exposed in header so set PUBLIC
 if(${TRITON_ENABLE_MALI_GPU})
@@ -213,22 +205,22 @@ target_link_libraries(
     triton-common-json             # from repo-common
 )
 
-if(${TRITON_ENABLE_GPU})
+if(${TRITON_ENABLE_ROCM})
   target_link_libraries(
     triton-backend-utils
     PUBLIC
-      CUDA::cudart
-    PRIVATE
-      kernel_library_new
+      hip::host
+      #PRIVATE
+      #kernel_library_new
   )
   if(${TRITON_ENABLE_MEMORY_TRACKER})
     target_link_libraries(
       triton-backend-utils
       PUBLIC
-        CUDA::cupti
+        hip::host
     )
   endif() # TRITON_ENABLE_MEMORY_TRACKER
-endif() # TRITON_ENABLE_GPU
+endif() # TRITON_ENABLE_ROCM
 
 #
 # Install
@@ -245,16 +237,16 @@ install(
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-if(${TRITON_ENABLE_GPU})
-  install(
-    TARGETS
-      kernel_library_new
-    EXPORT
-      triton-backend-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  )
-endif() # TRITON_ENABLE_GPU
+#if(${TRITON_ENABLE_ROCM})
+#  install(
+#    TARGETS
+#      kernel_library_new
+#    EXPORT
+#      triton-backend-targets
+#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#  )
+#endif() # TRITON_ENABLE_ROCM
 
 install(
   DIRECTORY include/

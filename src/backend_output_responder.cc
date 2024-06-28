@@ -145,11 +145,11 @@ BackendOutputResponder::ProcessTensor(
 
   // Done with the tensor, flush any pending pinned copies.
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
     hipEventRecord(event_, stream_);
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 }
 
 std::vector<TRITONBACKEND_State*>
@@ -240,11 +240,11 @@ BackendOutputResponder::ProcessStateTensor(
 
   // Done with the tensor, flush any pending pinned copies.
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
     hipEventRecord(event_, stream_);
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
   return states;
 }
@@ -252,7 +252,7 @@ BackendOutputResponder::ProcessStateTensor(
 bool
 BackendOutputResponder::Finalize()
 {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   if ((!deferred_pinned_.empty()) && need_sync_) {
     if (event_ != nullptr) {
       hipEventSynchronize(event_);
@@ -261,7 +261,7 @@ BackendOutputResponder::Finalize()
     }
     need_sync_ = false;
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
   // After the above sync all the GPU->pinned copies are complete. Any
   // deferred copies of pinned->CPU can now be done.
@@ -290,12 +290,12 @@ BackendOutputResponder::Finalize()
     }
   }
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   // Record the new event location if deferred copies occur
   if ((!deferred_pinned_.empty()) && need_sync_ && (event_ != nullptr)) {
     hipEventRecord(event_, stream_);
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
   deferred_pinned_.clear();
 
   return need_sync_;
@@ -597,11 +597,11 @@ BackendOutputResponder::ProcessBatchOutput(
 
   // Done with the tensor, flush any pending pinned copies.
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
     hipEventRecord(event_, stream_);
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 }
 
 }}  // namespace triton::backend

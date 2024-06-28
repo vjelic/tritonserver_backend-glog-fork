@@ -44,9 +44,9 @@
 #define TRITONJSON_STATUSSUCCESS nullptr
 #include "triton/common/triton_json.h"
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
 #include <hip/hip_runtime_api.h>
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
 namespace triton { namespace backend {
 
@@ -101,7 +101,7 @@ namespace triton { namespace backend {
     }                                    \
   } while (false)
 
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
 #define LOG_IF_CUDA_ERROR(X, MSG)                                    \
   do {                                                               \
     hipError_t lice_err__ = (X);                                    \
@@ -121,7 +121,7 @@ namespace triton { namespace backend {
           C, ((MSG) + ": " + hipGetErrorString(rice_err__)).c_str()); \
     }                                                                  \
   } while (false)
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 
 #define RESPOND_AND_SET_NULL_IF_ERROR(RESPONSE_PTR, X)               \
   do {                                                               \
@@ -192,9 +192,9 @@ namespace triton { namespace backend {
 #define SET_TIMESTAMP(TS_NS)
 #endif  // TRITON_ENABLE_STATS
 
-#ifndef TRITON_ENABLE_GPU
+#ifndef TRITON_ENABLE_ROCM
 using hipStream_t = void*;
-#endif  // !TRITON_ENABLE_GPU
+#endif  // !TRITON_ENABLE_ROCM
 
 /// Convenience deleter for TRITONBACKEND_ResponseFactory.
 struct ResponseFactoryDeleter {

@@ -83,7 +83,7 @@ BackendModelInstance::BackendModelInstance(
       break;
     }
     case TRITONSERVER_INSTANCEGROUPKIND_GPU: {
-#if defined(TRITON_ENABLE_GPU)
+#if defined(TRITON_ENABLE_ROCM)
       hipDeviceProp_t cuprops;
       hipError_t cuerr = hipGetDeviceProperties(&cuprops, device_id_);
       if (cuerr != hipSuccess) {
@@ -112,7 +112,7 @@ BackendModelInstance::BackendModelInstance(
 #elif !defined(TRITON_ENABLE_MALI_GPU)
       throw BackendModelInstanceException(TRITONSERVER_ErrorNew(
           TRITONSERVER_ERROR_INTERNAL, "GPU instances not supported"));
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
       break;
     }
     default: {
@@ -154,7 +154,7 @@ BackendModelInstance::BackendModelInstance(
 
 BackendModelInstance::~BackendModelInstance()
 {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
   if (stream_ != nullptr) {
     hipError_t err = hipStreamDestroy(stream_);
     if (err != hipSuccess) {
@@ -166,7 +166,7 @@ BackendModelInstance::~BackendModelInstance()
     }
     stream_ = nullptr;
   }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
 }
 
 }}  // namespace triton::backend

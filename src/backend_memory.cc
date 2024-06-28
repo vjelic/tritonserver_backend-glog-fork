@@ -42,7 +42,7 @@ BackendMemory::Create(
   void* ptr = nullptr;
   switch (alloc_type) {
     case AllocationType::CPU_PINNED: {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
       RETURN_IF_CUDA_ERROR(
           hipHostAlloc(&ptr, byte_size, hipHostMallocPortable),
           TRITONSERVER_ERROR_UNAVAILABLE,
@@ -51,12 +51,12 @@ BackendMemory::Create(
       return TRITONSERVER_ErrorNew(
           TRITONSERVER_ERROR_UNSUPPORTED,
           "pinned-memory allocation not supported");
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
       break;
     }
 
     case AllocationType::GPU: {
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
       int current_device;
       RETURN_IF_CUDA_ERROR(
           hipGetDevice(&current_device), TRITONSERVER_ERROR_INTERNAL,
@@ -82,7 +82,7 @@ BackendMemory::Create(
 #else
       return TRITONSERVER_ErrorNew(
           TRITONSERVER_ERROR_UNSUPPORTED, "GPU allocation not supported");
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
       break;
     }
 
@@ -170,20 +170,20 @@ BackendMemory::~BackendMemory()
   if (owns_buffer_) {
     switch (alloctype_) {
       case AllocationType::CPU_PINNED:
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
         if (buffer_ != nullptr) {
           LOG_IF_CUDA_ERROR(
               hipHostFree(buffer_), "failed to free pinned memory");
         }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
         break;
 
       case AllocationType::GPU:
-#ifdef TRITON_ENABLE_GPU
+#ifdef TRITON_ENABLE_ROCM
         if (buffer_ != nullptr) {
           LOG_IF_CUDA_ERROR(hipFree(buffer_), "failed to free CUDA memory");
         }
-#endif  // TRITON_ENABLE_GPU
+#endif  // TRITON_ENABLE_ROCM
         break;
 
       case AllocationType::CPU:
