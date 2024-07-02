@@ -59,7 +59,7 @@
 namespace triton { namespace backend {
 
 #ifdef TRITON_ENABLE_ROCM
-void HIPART_CB
+void HIPRT_CB
 MemcpyHost(void* args)
 {
   auto* copy_params = reinterpret_cast<CopyParams*>(args);
