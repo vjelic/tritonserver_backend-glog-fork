@@ -919,7 +919,7 @@ CreateCudaStream(
   }
 
   if (overridden) {
-    hipSetDevice(current_device);
+    cuerr = hipSetDevice(current_device);
   }
 
   if (cuerr != hipSuccess) {
