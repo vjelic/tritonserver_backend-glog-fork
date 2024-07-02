@@ -84,8 +84,8 @@ FetchContent_MakeAvailable(repo-common repo-core)
 # CUDA
 #
 if(${TRITON_ENABLE_ROCM})
-  list(APPEND CMAKE_PREFIX_PATH "/opt/rocm")
-  find_package(hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
+  list(APPEND CMAKE_PREFIX_PATH "/opt/rocm-6.0.2")
+  find_package(hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm-6.0.2)
 endif() # TRITON_ENABLE_ROCM
 
 #
