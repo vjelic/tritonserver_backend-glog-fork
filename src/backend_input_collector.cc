@@ -252,7 +252,7 @@ BackendInputCollector::ProcessTensor(
       buffer, buffer_byte_size, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
 }
@@ -362,9 +362,9 @@ BackendInputCollector::Finalize()
 #ifdef TRITON_ENABLE_ROCM
   if ((!deferred_pinned_.empty()) && need_sync_) {
     if (event_ != nullptr) {
-      hipEventSynchronize(event_);
+      (void) hipEventSynchronize(event_);
     } else {
-      hipStreamSynchronize(stream_);
+      (void) hipStreamSynchronize(stream_);
     }
     need_sync_ = false;
   }
@@ -374,7 +374,7 @@ BackendInputCollector::Finalize()
   // deferred copies of pinned->CPU can now be done.
 #ifdef TRITON_ENABLE_ROCM
   if (buffer_ready_event_ != nullptr) {
-    hipEventSynchronize(buffer_ready_event_);
+    (void) hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_ROCM
@@ -390,7 +390,7 @@ BackendInputCollector::Finalize()
 #ifdef TRITON_ENABLE_ROCM
   // Record the new event location if deferred copies occur
   if ((!deferred_pinned_.empty()) && need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
 
@@ -511,7 +511,7 @@ BackendInputCollector::SetInputTensor(
 
 #ifdef TRITON_ENABLE_ROCM
   if (wait_buffer && (buffer_ready_event_ != nullptr)) {
-    hipEventSynchronize(buffer_ready_event_);
+    (void) hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_ROCM
@@ -611,7 +611,7 @@ BackendInputCollector::FlushPendingPinned(
       if (!cuda_used) {
 #ifdef TRITON_ENABLE_ROCM
         if (buffer_ready_event_ != nullptr) {
-          hipEventSynchronize(buffer_ready_event_);
+          (void) hipEventSynchronize(buffer_ready_event_);
           buffer_ready_event_ = nullptr;
         }
 #endif  // TRITON_ENABLE_ROCM
@@ -694,7 +694,7 @@ BackendInputCollector::FlushPendingPinned(
                   if (incomplete_count->fetch_sub(1) == 1) {
 #ifdef TRITON_ENABLE_ROCM
                     if (buffer_ready_event_ != nullptr) {
-                      hipEventSynchronize(buffer_ready_event_);
+                      (void) hipEventSynchronize(buffer_ready_event_);
                       buffer_ready_event_ = nullptr;
                     }
 #endif  // TRITON_ENABLE_ROCM
@@ -827,7 +827,7 @@ BackendInputCollector::ProcessBatchInput(
 {
 #ifdef TRITON_ENABLE_ROCM
   if (buffer_ready_event_ != nullptr) {
-    hipEventSynchronize(buffer_ready_event_);
+    (void) hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
 #endif  // TRITON_ENABLE_ROCM
@@ -1283,20 +1283,20 @@ BackendInputCollector::LaunchCopyKernel(
   }
   char* byte_size_offset_buffer = backend_memory->MemoryPtr();
 
-  hipMemcpyAsync(
+  (void) hipMemcpyAsync(
       input_ptr_buffer, input_ptr_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(int8_t*),
       hipMemcpyDefault, stream_);
-  hipMemcpyAsync(
+  (void) hipMemcpyAsync(
       byte_size_buffer, byte_size_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(size_t),
       hipMemcpyDefault, stream_);
-  hipMemcpyAsync(
+  (void) hipMemcpyAsync(
       byte_size_offset_buffer, byte_size_offset_buffer_host.data(),
       pending_copy_kernel_input_buffer_counts_ * sizeof(size_t),
       hipMemcpyDefault, stream_);
   if (buffer_ready_event_ != nullptr) {
-    hipEventSynchronize(buffer_ready_event_);
+    (void) hipEventSynchronize(buffer_ready_event_);
     buffer_ready_event_ = nullptr;
   }
   RETURN_IF_CUDA_ERROR(

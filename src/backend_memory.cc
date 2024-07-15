@@ -44,7 +44,7 @@ BackendMemory::Create(
     case AllocationType::CPU_PINNED: {
 #ifdef TRITON_ENABLE_ROCM
       RETURN_IF_CUDA_ERROR(
-          hipHostAlloc(&ptr, byte_size, hipHostMallocPortable),
+          hipHostMalloc(&ptr, byte_size, hipHostMallocPortable),
           TRITONSERVER_ERROR_UNAVAILABLE,
           std::string("failed to allocate pinned system memory"));
 #else

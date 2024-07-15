@@ -56,10 +56,18 @@
 #define F_OK 0
 #endif
 
+#ifdef TRITON_ENABLE_ROCM
+#ifdef _WIN32
+#define HIPRT_CB __stdcall
+#else
+#define HIPRT_CB
+#endif
+#endif  // TRITON_ENABLE_ROCM
+
 namespace triton { namespace backend {
 
 #ifdef TRITON_ENABLE_ROCM
-void HIPART_CB
+void HIPRT_CB
 MemcpyHost(void* args)
 {
   auto* copy_params = reinterpret_cast<CopyParams*>(args);
@@ -695,7 +703,7 @@ CopyBuffer(
 #ifdef TRITON_ENABLE_ROCM
     if (copy_on_stream) {
       auto params = new CopyParams(dst, src, byte_size);
-      hipLaunchHostFunc(
+      (void) hipLaunchHostFunc(
           hip_stream, MemcpyHost, reinterpret_cast<void*>(params));
       *cuda_used = true;
     } else {

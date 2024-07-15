@@ -147,7 +147,7 @@ BackendOutputResponder::ProcessTensor(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
 }
@@ -242,7 +242,7 @@ BackendOutputResponder::ProcessStateTensor(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
 
@@ -255,9 +255,9 @@ BackendOutputResponder::Finalize()
 #ifdef TRITON_ENABLE_ROCM
   if ((!deferred_pinned_.empty()) && need_sync_) {
     if (event_ != nullptr) {
-      hipEventSynchronize(event_);
+      (void) hipEventSynchronize(event_);
     } else {
-      hipStreamSynchronize(stream_);
+      (void) hipStreamSynchronize(stream_);
     }
     need_sync_ = false;
   }
@@ -293,7 +293,7 @@ BackendOutputResponder::Finalize()
 #ifdef TRITON_ENABLE_ROCM
   // Record the new event location if deferred copies occur
   if ((!deferred_pinned_.empty()) && need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
   deferred_pinned_.clear();
@@ -599,7 +599,7 @@ BackendOutputResponder::ProcessBatchOutput(
   need_sync_ |= FlushPendingPinned(buffer, memory_type, memory_type_id);
 #ifdef TRITON_ENABLE_ROCM
   if (need_sync_ && (event_ != nullptr)) {
-    hipEventRecord(event_, stream_);
+    (void) hipEventRecord(event_, stream_);
   }
 #endif  // TRITON_ENABLE_ROCM
 }
