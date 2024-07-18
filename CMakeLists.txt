@@ -102,7 +102,6 @@ set(SRC_FILES
 
 if(${TRITON_ENABLE_ROCM})
   set(SRC_FILES ${SRC_FILES} "src/kernel.h")
-  set(SRC_FILES ${SRC_FILES} "src/kernel.cc")
   if(${TRITON_ENABLE_MEMORY_TRACKER})
     set(SRC_FILES ${SRC_FILES} "src/device_memory_tracker.cc")
   endif() # TRITON_ENABLE_MEMORY_TRACKER
@@ -115,20 +114,29 @@ add_library(
 
 if(${TRITON_ENABLE_ROCM})
   set(HOST_COMPILER_FLAGS "")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__HIP_PLATFORM_AMD__")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__HIP_PLATFORM_AMD__")
+  set(KERNEL_LIB_SRC_FILES
+    "src/kernel.cc" 
+    "src/kernel.h"
+  )
   if (WIN32)
     set(HOST_COMPILER_FLAGS "/MD")
   else()
     set(HOST_COMPILER_FLAGS "-fPIC")
   endif()
 
-  #set(CUDA_LIBRARIES PUBLIC ${CUDA_LIBRARIES})
-  #cuda_add_library(
-  #  kernel_library_new
-  #  src/kernel.cu src/kernel.h
-  #  OPTIONS -arch compute_53
-  #  OPTIONS -code compute_53,sm_53,sm_60,sm_61,sm_62,sm_70,sm_72,sm_75
-  #  OPTIONS -Xcompiler ${HOST_COMPILER_FLAGS}
-  #)
+  set(HIP_LIBRARIES PUBLIC ${HIP_LIBRARIES})
+  add_library(
+    kernel_library_new
+    ${KERNEL_LIB_SRC_FILES}
+    #src/kernel.cc src/kernel.h
+    #OPTIONS -arch compute_53
+    #OPTIONS -code compute_53,sm_53,sm_60,sm_61,sm_62,sm_70,sm_72,sm_75
+    #OPTIONS -Xcompiler ${HOST_COMPILER_FLAGS}
+  )
+  target_link_libraries(kernel_library_new PRIVATE hip::device)
+  target_compile_features(kernel_library_new PRIVATE cxx_std_11)
 endif() # TRITON_ENABLE_ROCM
 
 add_library(
@@ -155,7 +163,9 @@ target_compile_options(
   triton-backend-utils
   PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-    -Wall -Wextra -Wno-unused-parameter -Werror>
+    -Wall -Wextra>
+    #$<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+    #-Wall -Wextra -Wno-unused-parameter -Werror>
   $<$<CXX_COMPILER_ID:MSVC>:/Wall /D_WIN32_WINNT=0x0A00 /EHsc /Zc:preprocessor>
 )
 
@@ -210,8 +220,8 @@ if(${TRITON_ENABLE_ROCM})
     triton-backend-utils
     PUBLIC
       hip::host
-      #PRIVATE
-      #kernel_library_new
+      PRIVATE
+      kernel_library_new
   )
   if(${TRITON_ENABLE_MEMORY_TRACKER})
     target_link_libraries(
@@ -237,16 +247,16 @@ install(
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-#if(${TRITON_ENABLE_ROCM})
-#  install(
-#    TARGETS
-#      kernel_library_new
-#    EXPORT
-#      triton-backend-targets
-#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#  )
-#endif() # TRITON_ENABLE_ROCM
+if(${TRITON_ENABLE_ROCM})
+  install(
+    TARGETS
+      kernel_library_new
+    EXPORT
+      triton-backend-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+endif() # TRITON_ENABLE_ROCM
 
 install(
   DIRECTORY include/

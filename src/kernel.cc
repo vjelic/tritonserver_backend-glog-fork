@@ -29,7 +29,7 @@
 #include "kernel.h"
 
 #define THREADBLOCK_SIZE 512
-__launch_bounds__(THREADBLOCK_SIZE) __global__ void TritonGatherKernel(
+__global__ void __launch_bounds__(THREADBLOCK_SIZE) TritonGatherKernel(
     const int8_t** __restrict input_ptr_buffer,
     const size_t* __restrict byte_size_buffer,
     const size_t* __restrict byte_size_offset_buffer,
