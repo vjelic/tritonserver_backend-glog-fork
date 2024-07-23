@@ -135,6 +135,7 @@ if(${TRITON_ENABLE_ROCM})
     #OPTIONS -code compute_53,sm_53,sm_60,sm_61,sm_62,sm_70,sm_72,sm_75
     #OPTIONS -Xcompiler ${HOST_COMPILER_FLAGS}
   )
+  target_compile_options(kernel_library_new PRIVATE ${HOST_COMPILER_FLAGS})
   target_link_libraries(kernel_library_new PRIVATE hip::device)
   target_compile_features(kernel_library_new PRIVATE cxx_std_11)
 endif() # TRITON_ENABLE_ROCM
