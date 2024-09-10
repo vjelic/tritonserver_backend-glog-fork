@@ -83,7 +83,7 @@ BackendModelInstance::BackendModelInstance(
       break;
     }
     case TRITONSERVER_INSTANCEGROUPKIND_GPU: {
-#if defined(TRITON_ENABLE_GPU)
+#ifdef TRITON_ENABLE_GPU
       hipDeviceProp_t cuprops;
       hipError_t cuerr = hipGetDeviceProperties(&cuprops, device_id_);
       if (cuerr != hipSuccess) {
