@@ -12,7 +12,7 @@
           "informationUri": "https://www.glog.ai",
           "rules": [
             {
-              "id": "glog-b88e1ef1-c763-4310-9a09-66c3f4b10720",
+              "id": "glog-fb9b5a1c-67d1-4231-9d69-cafe0207a823",
               "help": {
                 "text": ""
               },
@@ -23,7 +23,7 @@
               }
             },
             {
-              "id": "glog-873099a7-b170-4916-ae7e-acc45533141b",
+              "id": "glog-4db43d59-2cd8-4405-ac84-bee470ba31d9",
               "help": {
                 "text": ""
               },
@@ -34,7 +34,18 @@
               }
             },
             {
-              "id": "glog-f75c661a-e863-43d7-ab1b-e69e84306d28",
+              "id": "glog-205dcb68-e775-473f-b531-7476e2709136",
+              "help": {
+                "text": ""
+              },
+              "properties": {
+                "tags": [
+                  "DS140021"
+                ]
+              }
+            },
+            {
+              "id": "glog-cd92bc45-287f-4ca6-bc58-52a01171a498",
               "help": {
                 "text": ""
               },
@@ -45,7 +56,7 @@
               }
             },
             {
-              "id": "glog-60f5ab16-b826-409b-9139-96e9e6407b84",
+              "id": "glog-642feb66-a03b-4ddc-81b6-20ea557c69d2",
               "help": {
                 "text": ""
               },
@@ -56,24 +67,35 @@
               }
             },
             {
-              "id": "glog-60c8f7db-5d59-4de8-8fd7-6b0045a3c0fe",
-              "help": {
-                "text": ""
-              },
-              "properties": {
-                "tags": [
-                  "DS121708"
-                ]
-              }
-            },
-            {
-              "id": "glog-c9a20197-ecf9-4320-a8cc-92444fc13a7d",
+              "id": "glog-6be614ff-1c3b-458a-8fa2-d737386bbe48",
               "help": {
                 "text": ""
               },
               "properties": {
                 "tags": [
                   "DS161085"
+                ]
+              }
+            },
+            {
+              "id": "glog-bda44c41-94e4-4cf4-88c8-84ddf50ac7e0",
+              "help": {
+                "text": ""
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
+                ]
+              }
+            },
+            {
+              "id": "glog-8839db46-b3da-481b-9c28-83a63f14d10c",
+              "help": {
+                "text": ""
+              },
+              "properties": {
+                "tags": [
+                  "DS121708"
                 ]
               }
             }
@@ -89,7 +111,7 @@
       "language": "en-US",
       "results": [
         {
-          "ruleId": "glog-b88e1ef1-c763-4310-9a09-66c3f4b10720",
+          "ruleId": "glog-fb9b5a1c-67d1-4231-9d69-cafe0207a823",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -97,20 +119,20 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "src/backend_input_collector.cc"
+                  "uri": "examples/backends/bls/src/bls.cc"
                 },
                 "region": {
-                  "startLine": 1099,
-                  "startColumn": 6,
-                  "endLine": 1101,
-                  "endColumn": 23,
-                  "charOffset": 43665,
-                  "charLength": 110,
+                  "startLine": 283,
+                  "startColumn": 4,
+                  "endLine": 283,
+                  "endColumn": 56,
+                  "charOffset": 11921,
+                  "charLength": 52,
                   "snippet": {
-                    "text": "memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)",
+                    "text": "memcpy(output_buffer, output_base, output_byte_size)",
                     "rendered": {
-                      "text": "memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)",
-                      "markdown": "`memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)`"
+                      "text": "memcpy(output_buffer, output_base, output_byte_size)",
+                      "markdown": "`memcpy(output_buffer, output_base, output_byte_size)`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -126,16 +148,16 @@
               "artifactChanges": [
                 {
                   "artifactLocation": {
-                    "uri": "src/backend_input_collector.cc"
+                    "uri": "examples/backends/bls/src/bls.cc"
                   },
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 43665,
-                        "charLength": 110
+                        "charOffset": 11921,
+                        "charLength": 52
                       },
                       "insertedContent": {
-                        "text": "memcpy_s(\n          buffer + buffer_offset + idx * batch_1_size, <size of \n          buffer + buffer_offset + idx * batch_1_size>,  buffer + buffer_offset, \n          batch_1_size)"
+                        "text": "memcpy_s(output_buffer, <size of output_buffer>,  output_base,  output_byte_size)"
                       }
                     }
                   ]
@@ -152,7 +174,7 @@
           }
         },
         {
-          "ruleId": "glog-873099a7-b170-4916-ae7e-acc45533141b",
+          "ruleId": "glog-4db43d59-2cd8-4405-ac84-bee470ba31d9",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -215,7 +237,7 @@
           }
         },
         {
-          "ruleId": "glog-f75c661a-e863-43d7-ab1b-e69e84306d28",
+          "ruleId": "glog-205dcb68-e775-473f-b531-7476e2709136",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -226,17 +248,17 @@
                   "uri": "src/backend_common.cc"
                 },
                 "region": {
-                  "startLine": 702,
-                  "startColumn": 6,
-                  "endLine": 702,
-                  "endColumn": 33,
-                  "charOffset": 24191,
-                  "charLength": 27,
+                  "startLine": 1116,
+                  "startColumn": 49,
+                  "endLine": 1116,
+                  "endColumn": 64,
+                  "charOffset": 36235,
+                  "charLength": 15,
                   "snippet": {
-                    "text": "memcpy(dst, src, byte_size)",
+                    "text": "strlen(\"TYPE_\")",
                     "rendered": {
-                      "text": "memcpy(dst, src, byte_size)",
-                      "markdown": "`memcpy(dst, src, byte_size)`"
+                      "text": "strlen(\"TYPE_\")",
+                      "markdown": "`strlen(\"TYPE_\")`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -247,7 +269,7 @@
           "fixes": [
             {
               "description": {
-                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
               },
               "artifactChanges": [
                 {
@@ -257,11 +279,34 @@
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 24191,
-                        "charLength": 27
+                        "charOffset": 36235,
+                        "charLength": 15
                       },
                       "insertedContent": {
-                        "text": "memcpy_s(dst, <size of dst>,  src,  byte_size)"
+                        "text": "strlen_s(\"TYPE_\", <size of \"TYPE_\">)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "description": {
+                "text": "If a string is missing a null terminator, strlen will read past the end of the buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/backend_common.cc"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 36235,
+                        "charLength": 15
+                      },
+                      "insertedContent": {
+                        "text": "strnlen(\"TYPE_\", <size of \"TYPE_\">)"
                       }
                     }
                   ]
@@ -278,7 +323,7 @@
           }
         },
         {
-          "ruleId": "glog-60f5ab16-b826-409b-9139-96e9e6407b84",
+          "ruleId": "glog-cd92bc45-287f-4ca6-bc58-52a01171a498",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -341,7 +386,7 @@
           }
         },
         {
-          "ruleId": "glog-60c8f7db-5d59-4de8-8fd7-6b0045a3c0fe",
+          "ruleId": "glog-642feb66-a03b-4ddc-81b6-20ea557c69d2",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -352,17 +397,17 @@
                   "uri": "src/backend_common.cc"
                 },
                 "region": {
-                  "startLine": 66,
-                  "startColumn": 2,
-                  "endLine": 66,
-                  "endColumn": 71,
-                  "charOffset": 2498,
-                  "charLength": 69,
+                  "startLine": 702,
+                  "startColumn": 6,
+                  "endLine": 702,
+                  "endColumn": 33,
+                  "charOffset": 24191,
+                  "charLength": 27,
                   "snippet": {
-                    "text": "memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)",
+                    "text": "memcpy(dst, src, byte_size)",
                     "rendered": {
-                      "text": "memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)",
-                      "markdown": "`memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)`"
+                      "text": "memcpy(dst, src, byte_size)",
+                      "markdown": "`memcpy(dst, src, byte_size)`"
                     }
                   },
                   "sourceLanguage": "cpp"
@@ -383,11 +428,11 @@
                   "replacements": [
                     {
                       "deletedRegion": {
-                        "charOffset": 2498,
-                        "charLength": 69
+                        "charOffset": 24191,
+                        "charLength": 27
                       },
                       "insertedContent": {
-                        "text": "memcpy_s(copy_params->dst_, <size of copy_params->dst_>,  copy_params->src_,  copy_params->byte_size_)"
+                        "text": "memcpy_s(dst, <size of dst>,  src,  byte_size)"
                       }
                     }
                   ]
@@ -404,7 +449,7 @@
           }
         },
         {
-          "ruleId": "glog-c9a20197-ecf9-4320-a8cc-92444fc13a7d",
+          "ruleId": "glog-6be614ff-1c3b-458a-8fa2-d737386bbe48",
           "kind": "fail",
           "level": "note",
           "message": {},
@@ -451,6 +496,132 @@
                       },
                       "insertedContent": {
                         "text": "calloc(<number of elements>, <size of each element>)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-bda44c41-94e4-4cf4-88c8-84ddf50ac7e0",
+          "kind": "fail",
+          "level": "note",
+          "message": {},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/backend_input_collector.cc"
+                },
+                "region": {
+                  "startLine": 1099,
+                  "startColumn": 6,
+                  "endLine": 1101,
+                  "endColumn": 23,
+                  "charOffset": 43665,
+                  "charLength": 110,
+                  "snippet": {
+                    "text": "memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)",
+                    "rendered": {
+                      "text": "memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)",
+                      "markdown": "`memcpy(\n          buffer + buffer_offset + idx * batch_1_size, buffer + buffer_offset,\n          batch_1_size)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/backend_input_collector.cc"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 43665,
+                        "charLength": 110
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(\n          buffer + buffer_offset + idx * batch_1_size, <size of \n          buffer + buffer_offset + idx * batch_1_size>,  buffer + buffer_offset, \n          batch_1_size)"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "DevSkimSeverity": "BestPractice",
+            "DevSkimConfidence": "High",
+            "tags": [
+              "API.DangerousAPI.ProblematicFunction"
+            ]
+          }
+        },
+        {
+          "ruleId": "glog-8839db46-b3da-481b-9c28-83a63f14d10c",
+          "kind": "fail",
+          "level": "note",
+          "message": {},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/backend_common.cc"
+                },
+                "region": {
+                  "startLine": 66,
+                  "startColumn": 2,
+                  "endLine": 66,
+                  "endColumn": 71,
+                  "charOffset": 2498,
+                  "charLength": 69,
+                  "snippet": {
+                    "text": "memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)",
+                    "rendered": {
+                      "text": "memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)",
+                      "markdown": "`memcpy(copy_params->dst_, copy_params->src_, copy_params->byte_size_)`"
+                    }
+                  },
+                  "sourceLanguage": "cpp"
+                }
+              }
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "There are a number of conditions in which memcpy can introduce a vulnerability (mismatched buffer sizes, null pointers, etc.). More secure alternitives perform additional validation of the source and destination buffer"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "src/backend_common.cc"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "charOffset": 2498,
+                        "charLength": 69
+                      },
+                      "insertedContent": {
+                        "text": "memcpy_s(copy_params->dst_, <size of copy_params->dst_>,  copy_params->src_,  copy_params->byte_size_)"
                       }
                     }
                   ]
